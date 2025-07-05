@@ -10,7 +10,9 @@ import {
   Users,
   Settings,
   Calendar as CalendarIcon,
-  UserCheck
+  UserCheck,
+  BookOpen,
+  Plus
 } from 'lucide-react'
 
 const sidebarItems = [
@@ -35,7 +37,12 @@ const sidebarItems = [
     icon: Users,
   },
   {
-    title: 'Years',
+    title: 'Courses',
+    href: '/courses',
+    icon: BookOpen,
+  },
+  {
+    title: 'Academic Years',
     href: '/years',
     icon: CalendarIcon,
   },

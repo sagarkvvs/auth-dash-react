@@ -11,6 +11,12 @@ import { LoginForm } from "@/components/LoginForm";
 import { SignUpForm } from "@/components/SignUpForm";
 import { ResetPassword } from "@/pages/ResetPassword";
 import { Dashboard } from "@/pages/Dashboard";
+import { Students } from "@/pages/Students";
+import { MarkAttendance } from "@/pages/MarkAttendance";
+import { Courses } from "@/pages/Courses";
+import { AcademicYears } from "@/pages/AcademicYears";
+import { Reports } from "@/pages/Reports";
+import { Admin } from "@/pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,11 +42,12 @@ const App = () => (
             >
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="attendance" element={<div className="p-6"><h2 className="text-2xl font-bold">Attendance Tracking</h2><p className="text-gray-600 mt-2">Feature coming soon...</p></div>} />
-              <Route path="reports" element={<div className="p-6"><h2 className="text-2xl font-bold">Reports</h2><p className="text-gray-600 mt-2">Feature coming soon...</p></div>} />
-              <Route path="students" element={<div className="p-6"><h2 className="text-2xl font-bold">Student Management</h2><p className="text-gray-600 mt-2">Feature coming soon...</p></div>} />
-              <Route path="years" element={<div className="p-6"><h2 className="text-2xl font-bold">Academic Years</h2><p className="text-gray-600 mt-2">Feature coming soon...</p></div>} />
-              <Route path="admin" element={<div className="p-6"><h2 className="text-2xl font-bold">Admin Management</h2><p className="text-gray-600 mt-2">Feature coming soon...</p></div>} />
+              <Route path="attendance" element={<MarkAttendance />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="students" element={<Students />} />
+              <Route path="courses" element={<Courses />} />
+              <Route path="years" element={<AcademicYears />} />
+              <Route path="admin" element={<Admin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
