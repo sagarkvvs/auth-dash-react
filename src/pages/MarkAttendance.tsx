@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -86,13 +85,16 @@ export function MarkAttendance() {
 
       if (error) throw error
       
-      const studentList = data?.map(item => item.students).filter(Boolean) || []
+      // Fix the data extraction - students is nested inside each record
+      const studentList = data?.map(item => item.students).filter(Boolean).flat() || []
       setStudents(studentList)
       
       // Initialize attendance with 'present' by default
       const initialAttendance: Record<string, 'present' | 'absent' | 'late'> = {}
       studentList.forEach(student => {
-        initialAttendance[student.id] = 'present'
+        if (student?.id) {
+          initialAttendance[student.id] = 'present'
+        }
       })
       setAttendance(initialAttendance)
     } catch (error) {
