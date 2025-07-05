@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -95,7 +96,7 @@ export function Reports() {
         `)
         .eq('course_id', selectedCourse)
         .gte('date', startDate)
-        .lte('date', endDate)
+        .lte('date', endDateStr)
 
       if (attendanceError) throw attendanceError
 
@@ -108,10 +109,13 @@ export function Reports() {
       
       attendanceData?.forEach(record => {
         const studentId = record.student_id
+        // Fix: properly access the nested students object
+        const studentData = Array.isArray(record.students) ? record.students[0] : record.students
+        
         if (!studentAttendance[studentId]) {
           studentAttendance[studentId] = {
-            student_id: record.students.student_id,
-            student_name: record.students.full_name,
+            student_id: studentData?.student_id || studentId,
+            student_name: studentData?.full_name || 'Unknown',
             present_count: 0,
             absent_count: 0,
             late_count: 0,
