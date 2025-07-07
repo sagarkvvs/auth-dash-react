@@ -187,33 +187,38 @@ export function Dashboard() {
   ]
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 min-h-screen bg-gray-50">
+      {/* Header - Mobile Optimized */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
-          <p className="text-gray-600 mt-1">
-            {profile?.role === 'faculty' ? 'Faculty' : 'HOD'} Dashboard - Monitor attendance and manage students
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
+            {profile?.role === 'faculty' ? 'Faculty' : 
+             profile?.role === 'hod' ? 'HOD' : 'Admin'} Dashboard
           </p>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <Clock className="h-4 w-4" />
-          <span>Last updated: {new Date().toLocaleTimeString()}</span>
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 bg-white px-3 py-2 rounded-lg shadow-sm">
+          <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span>Updated: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid - Mobile First */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {dashboardStats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                  <p className="text-sm text-gray-500 mt-1">{stat.description}</p>
+          <Card 
+            key={stat.title} 
+            className="hover:shadow-lg transition-all duration-200 border-0 shadow-md bg-white"
+          >
+            <CardContent className="p-3 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                <div className="flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-xl sm:text-3xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-xs text-gray-500 mt-1 hidden sm:block">{stat.description}</p>
                 </div>
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                <div className={`p-2 sm:p-3 rounded-lg ${stat.bgColor} self-start sm:self-center`}>
+                  <stat.icon className={`h-4 w-4 sm:h-6 sm:w-6 ${stat.color}`} />
                 </div>
               </div>
             </CardContent>
@@ -221,84 +226,89 @@ export function Dashboard() {
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BarChart3 className="h-5 w-5 mr-2" />
+      {/* Quick Actions - Mobile Optimized */}
+      <Card className="border-0 shadow-md bg-white">
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="flex items-center text-lg sm:text-xl">
+            <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             Quick Actions
           </CardTitle>
-          <CardDescription>
-            Access frequently used features quickly
+          <CardDescription className="text-sm">
+            Access frequently used features
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action) => (
               <Button
                 key={action.title}
                 variant="outline"
-                className="h-auto p-4 flex-col items-start text-left hover:shadow-md transition-all"
+                className="h-auto p-4 sm:p-6 flex-col items-start text-left hover:shadow-lg transition-all duration-200 border-2 hover:border-primary/20 min-h-[120px] sm:min-h-[140px] group"
                 onClick={() => window.location.href = action.href}
               >
-                <div className={`p-2 rounded-lg ${action.color} mb-3`}>
-                  <action.icon className="h-5 w-5 text-white" />
+                <div className={`p-2 sm:p-3 rounded-lg ${action.color} mb-3 group-hover:scale-110 transition-transform duration-200`}>
+                  <action.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
-                <p className="text-sm text-gray-600">{action.description}</p>
+                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{action.title}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{action.description}</p>
               </Button>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>
-            Latest attendance and system updates
+      {/* Recent Activity - Mobile Optimized */}
+      <Card className="border-0 shadow-md bg-white">
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="text-lg sm:text-xl">Recent Activity</CardTitle>
+          <CardDescription className="text-sm">
+            Latest attendance updates
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {loading ? (
-              <div className="flex items-center justify-center p-8">
-                <div className="text-sm text-gray-600">Loading recent activity...</div>
+              <div className="flex items-center justify-center p-6 sm:p-8">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                  <div className="text-sm text-gray-600">Loading recent activity...</div>
+                </div>
               </div>
             ) : recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="p-2 bg-blue-100 rounded-full">
-                    <UserCheck className="h-4 w-4 text-blue-600" />
+                <div key={activity.id} className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                  <div className="p-2 bg-blue-100 rounded-full flex-shrink-0 mt-1">
+                    <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 line-clamp-2">
                       {activity.message}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
                       Attendance recorded
                     </p>
                   </div>
-                  <span className="text-sm text-gray-500">
-                    {new Date(activity.timestamp).toLocaleDateString()}
+                  <span className="text-xs text-gray-500 flex-shrink-0">
+                    {new Date(activity.timestamp).toLocaleDateString([], { 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
                   </span>
                 </div>
               ))
             ) : (
-              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-dashed border-blue-200">
                 <div className="p-2 bg-blue-100 rounded-full">
-                  <Calendar className="h-4 w-4 text-blue-600" />
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">
                     No recent activity
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
                     Start marking attendance to see activity here
                   </p>
                 </div>
-                <span className="text-sm text-gray-500">-</span>
               </div>
             )}
           </div>
