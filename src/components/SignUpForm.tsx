@@ -26,6 +26,45 @@ export function SignUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Enhanced validation
+    if (!fullName.trim()) {
+      toast({
+        title: "Error",
+        description: "Full name is required",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!employeeId.trim()) {
+      toast({
+        title: "Error",
+        description: "Employee ID is required",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!role) {
+      toast({
+        title: "Error",
+        description: "Please select a role",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (password !== confirmPassword) {
       toast({
         title: "Error",
@@ -35,10 +74,20 @@ export function SignUpForm() {
       return
     }
 
-    if (password.length < 6) {
+    // Enhanced password validation
+    if (password.length < 8) {
       toast({
         title: "Error",
-        description: "Password must be at least 6 characters long",
+        description: "Password must be at least 8 characters long",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      toast({
+        title: "Error",
+        description: "Password must contain at least one uppercase letter, one lowercase letter, and one number",
         variant: "destructive",
       })
       return
@@ -46,23 +95,31 @@ export function SignUpForm() {
 
     setLoading(true)
     
-    const { error } = await signUp(email, password, role, employeeId, fullName)
-    
-    if (error) {
+    try {
+      const { error } = await signUp(email, password, role, employeeId, fullName)
+      
+      if (error) {
+        toast({
+          title: "Registration Failed",
+          description: error.message,
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Success",
+          description: "Registration successful! Please check your email to verify your account.",
+        })
+        navigate('/login')
+      }
+    } catch (error) {
       toast({
-        title: "Registration Failed",
-        description: error.message,
+        title: "Error",  
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       })
-    } else {
-      toast({
-        title: "Success",
-        description: "Registration successful! Please check your email to verify your account.",
-      })
-      navigate('/login')
+    } finally {
+      setLoading(false)
     }
-    
-    setLoading(false)
   }
 
   return (

@@ -34,21 +34,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     })
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session)
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        if (session?.user) {
-          await fetchUserProfile(session.user.id)
-        } else {
-          setProfile(null)
-          setLoading(false)
-        }
+  // Listen for auth changes
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (event, session) => {
+      console.log('Auth state changed:', event, session)
+      setSession(session)
+      setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        // Defer async operations to prevent deadlocks
+        setTimeout(() => {
+          fetchUserProfile(session.user.id)
+        }, 0)
+      } else {
+        setProfile(null)
+        setLoading(false)
       }
-    )
+    }
+  )
 
     return () => subscription.unsubscribe()
   }, [])
@@ -86,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login`,
         data: {
           role,
           employee_id: employeeId,
@@ -106,7 +110,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
     return { error }
   }
 
