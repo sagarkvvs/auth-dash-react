@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
@@ -62,6 +62,7 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const location = useLocation()
+  const navigate = useNavigate()
   const { signOut } = useAuth()
   const { toast } = useToast()
 
@@ -71,6 +72,7 @@ export function Sidebar({ className }: SidebarProps) {
       title: "Signed out",
       description: "You have been successfully signed out.",
     })
+    navigate('/login')
   }
 
   return (
