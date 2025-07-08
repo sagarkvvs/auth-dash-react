@@ -2,6 +2,9 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/hooks/use-toast'
+import { Button } from '@/components/ui/button'
 import {
   BarChart3,
   Calendar,
@@ -12,7 +15,7 @@ import {
   Calendar as CalendarIcon,
   UserCheck,
   BookOpen,
-  Plus
+  LogOut
 } from 'lucide-react'
 
 const sidebarItems = [
@@ -59,6 +62,16 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const location = useLocation()
+  const { signOut } = useAuth()
+  const { toast } = useToast()
+
+  const handleSignOut = async () => {
+    await signOut()
+    toast({
+      title: "Signed out",
+      description: "You have been successfully signed out.",
+    })
+  }
 
   return (
     <div className={cn('pb-12 w-64', className)}>
@@ -87,6 +100,16 @@ export function Sidebar({ className }: SidebarProps) {
                 {item.title}
               </Link>
             ))}
+            
+            {/* Sign Out Button */}
+            <Button
+              variant="ghost"
+              onClick={handleSignOut}
+              className="w-full justify-start px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors mt-4"
+            >
+              <LogOut className="mr-3 h-4 w-4" />
+              Sign Out
+            </Button>
           </div>
         </div>
       </div>
