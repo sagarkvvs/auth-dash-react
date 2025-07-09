@@ -223,12 +223,19 @@ export function Reports() {
           <h2 className="text-2xl font-bold text-gray-900">Attendance Reports</h2>
           <p className="text-gray-600 mt-1">Generate and analyze attendance reports</p>
         </div>
-        {attendanceReport.length > 0 && (
-          <Button onClick={exportToCSV}>
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {attendanceReport.length > 0 ? (
+            <Button onClick={exportToCSV}>
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+          ) : (
+            <Button variant="outline" disabled>
+              <Download className="h-4 w-4 mr-2" />
+              No Data to Export
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card>
