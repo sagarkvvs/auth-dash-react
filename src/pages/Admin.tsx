@@ -34,7 +34,8 @@ export function Admin() {
     full_name: '',
     employee_id: '',
     role: 'faculty' as 'faculty' | 'hod' | 'admin',
-    department: ''
+    department: '',
+    password: ''
   })
 
   useEffect(() => {
@@ -84,13 +85,47 @@ export function Admin() {
           description: "User profile updated successfully",
         })
       } else {
-        // For adding new users, we'd typically need to create them via auth first
-        // This is a simplified version - in practice, you'd want to send an invitation
-        toast({
-          title: "Info",
-          description: "Adding new users requires auth signup. Please use the signup form.",
+        // Create new user using edge function
+        if (!formData.password || formData.password.length < 6) {
+          toast({
+            title: "Error",
+            description: "Password must be at least 6 characters long",
+            variant: "destructive",
+          })
+          return
+        }
+
+        const { data: session } = await supabase.auth.getSession()
+        if (!session.session) {
+          throw new Error('No active session')
+        }
+
+        const response = await fetch('https://yrhvitfzgxlgftdchgkn.supabase.co/functions/v1/admin-create-user', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            full_name: formData.full_name,
+            employee_id: formData.employee_id,
+            role: formData.role,
+            department: formData.department
+          })
         })
-        return
+
+        const result = await response.json()
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to create user')
+        }
+        
+        toast({
+          title: "Success",
+          description: "User created successfully",
+        })
       }
 
       setIsDialogOpen(false)
@@ -100,14 +135,15 @@ export function Admin() {
         full_name: '',
         employee_id: '',
         role: 'faculty',
-        department: ''
+        department: '',
+        password: ''
       })
       fetchProfiles()
     } catch (error) {
       console.error('Error saving profile:', error)
       toast({
         title: "Error",
-        description: "Failed to save user profile",
+        description: error instanceof Error ? error.message : "Failed to save user profile",
         variant: "destructive",
       })
     }
@@ -120,7 +156,8 @@ export function Admin() {
       full_name: profileData.full_name || '',
       employee_id: profileData.employee_id || '',
       role: profileData.role,
-      department: profileData.department || ''
+      department: profileData.department || '',
+      password: ''
     })
     setIsDialogOpen(true)
   }
@@ -207,7 +244,8 @@ export function Admin() {
                 full_name: '',
                 employee_id: '',
                 role: 'faculty',
-                department: ''
+                department: '',
+                password: ''
               })
             }}>
               <Plus className="h-4 w-4 mr-2" />
@@ -233,6 +271,19 @@ export function Admin() {
                   required
                 />
               </div>
+              {!editingProfile && (
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    placeholder="Minimum 6 characters"
+                    required
+                  />
+                </div>
+              )}
               <div>
                 <Label htmlFor="full_name">Full Name</Label>
                 <Input
