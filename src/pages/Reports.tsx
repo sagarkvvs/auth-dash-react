@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
-import { FileText, Download, Calendar, Users, BarChart3 } from 'lucide-react'
+import { FileText, Download, Calendar, Users, BarChart3, UserCheck, GraduationCap } from 'lucide-react'
 
 interface Course {
   id: string
@@ -210,6 +210,124 @@ export function Reports() {
     })
   }
 
+  const exportProfilesCSV = async () => {
+    try {
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('full_name')
+
+      if (error) throw error
+
+      if (!profiles || profiles.length === 0) {
+        toast({
+          title: "No Data",
+          description: "No profiles found to export",
+          variant: "destructive",
+        })
+        return
+      }
+
+      const headers = ['ID', 'Email', 'Full Name', 'Employee ID', 'Role', 'Department', 'Created At']
+      const csvContent = [
+        headers.join(','),
+        ...profiles.map(profile => [
+          profile.id,
+          profile.email,
+          profile.full_name || '',
+          profile.employee_id || '',
+          profile.role,
+          profile.department || '',
+          profile.created_at || ''
+        ].join(','))
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `profiles_${new Date().toISOString().split('T')[0]}.csv`)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      toast({
+        title: "Success",
+        description: "Profiles CSV exported successfully",
+      })
+    } catch (error) {
+      console.error('Error exporting profiles:', error)
+      toast({
+        title: "Error",
+        description: "Failed to export profiles",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const exportStudentsCSV = async () => {
+    try {
+      const { data: students, error } = await supabase
+        .from('students')
+        .select(`
+          *,
+          academic_years(year_name)
+        `)
+        .order('full_name')
+
+      if (error) throw error
+
+      if (!students || students.length === 0) {
+        toast({
+          title: "No Data",
+          description: "No students found to export",
+          variant: "destructive",
+        })
+        return
+      }
+
+      const headers = ['ID', 'Student ID', 'Full Name', 'Email', 'Phone', 'Department', 'Semester', 'Academic Year', 'Active', 'Created At']
+      const csvContent = [
+        headers.join(','),
+        ...students.map(student => [
+          student.id,
+          student.student_id,
+          student.full_name,
+          student.email || '',
+          student.phone || '',
+          student.department,
+          student.semester || '',
+          student.academic_years?.year_name || '',
+          student.is_active ? 'Yes' : 'No',
+          student.created_at || ''
+        ].join(','))
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `students_${new Date().toISOString().split('T')[0]}.csv`)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      toast({
+        title: "Success",
+        description: "Students CSV exported successfully",
+      })
+    } catch (error) {
+      console.error('Error exporting students:', error)
+      toast({
+        title: "Error",
+        description: "Failed to export students",
+        variant: "destructive",
+      })
+    }
+  }
+
   const getAttendanceColor = (percentage: number) => {
     if (percentage >= 75) return 'text-green-600'
     if (percentage >= 60) return 'text-yellow-600'
@@ -220,22 +338,67 @@ export function Reports() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Attendance Reports</h2>
-          <p className="text-gray-600 mt-1">Generate and analyze attendance reports</p>
+          <h2 className="text-2xl font-bold text-gray-900">Reports & Data Export</h2>
+          <p className="text-gray-600 mt-1">Generate reports and export data as CSV files</p>
         </div>
-        <div className="flex gap-2">
-          {attendanceReport.length > 0 ? (
-            <Button onClick={exportToCSV}>
+      </div>
+
+      {/* Data Export Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <UserCheck className="h-5 w-5 mr-2" />
+              Profiles Export
+            </CardTitle>
+            <CardDescription>Export all user profiles data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={exportProfilesCSV} className="w-full">
               <Download className="h-4 w-4 mr-2" />
-              Export CSV
+              Export Profiles CSV
             </Button>
-          ) : (
-            <Button variant="outline" disabled>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <GraduationCap className="h-5 w-5 mr-2" />
+              Students Export
+            </CardTitle>
+            <CardDescription>Export all students data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={exportStudentsCSV} className="w-full">
               <Download className="h-4 w-4 mr-2" />
-              No Data to Export
+              Export Students CSV
             </Button>
-          )}
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <FileText className="h-5 w-5 mr-2" />
+              Attendance Export
+            </CardTitle>
+            <CardDescription>Export attendance reports</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {attendanceReport.length > 0 ? (
+              <Button onClick={exportToCSV} className="w-full">
+                <Download className="h-4 w-4 mr-2" />
+                Export Attendance CSV
+              </Button>
+            ) : (
+              <Button variant="outline" disabled className="w-full">
+                <Download className="h-4 w-4 mr-2" />
+                Select Course First
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
