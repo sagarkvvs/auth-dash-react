@@ -265,7 +265,7 @@ export function MarkAttendance() {
                 <CardTitle>Student Attendance</CardTitle>
                 <CardDescription>Mark attendance for each student</CardDescription>
               </div>
-              <Button onClick={handleSaveAttendance} disabled={saving}>
+              <Button onClick={handleSaveAttendance} disabled={saving} className="hidden md:flex">
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? 'Saving...' : 'Save Attendance'}
               </Button>
@@ -279,57 +279,117 @@ export function MarkAttendance() {
                 No students enrolled in this course
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Student ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Mobile-friendly card layout */}
+                <div className="md:hidden space-y-4">
                   {students.map((student) => (
-                    <TableRow key={student.id}>
-                      <TableCell className="font-mono">{student.student_id}</TableCell>
-                      <TableCell className="font-medium">{student.full_name}</TableCell>
-                      <TableCell>{student.department}</TableCell>
-                      <TableCell>
+                    <Card key={student.id} className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 className="font-medium text-base">{student.full_name}</h3>
+                          <p className="text-sm text-muted-foreground">{student.student_id}</p>
+                        </div>
                         <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(attendance[student.id])}`}>
                           {getStatusIcon(attendance[student.id])}
                           <span className="ml-1 capitalize">{attendance[student.id]}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant={attendance[student.id] === 'present' ? 'default' : 'outline'}
-                            onClick={() => handleAttendanceChange(student.id, 'present')}
-                          >
-                            <UserCheck className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={attendance[student.id] === 'late' ? 'default' : 'outline'}
-                            onClick={() => handleAttendanceChange(student.id, 'late')}
-                          >
-                            <Clock className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={attendance[student.id] === 'absent' ? 'default' : 'outline'}
-                            onClick={() => handleAttendanceChange(student.id, 'absent')}
-                          >
-                            <UserX className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <Button
+                          size="sm"
+                          variant={attendance[student.id] === 'present' ? 'default' : 'outline'}
+                          onClick={() => handleAttendanceChange(student.id, 'present')}
+                          className="flex items-center justify-center"
+                        >
+                          <UserCheck className="h-4 w-4 mr-1" />
+                          Present
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={attendance[student.id] === 'late' ? 'default' : 'outline'}
+                          onClick={() => handleAttendanceChange(student.id, 'late')}
+                          className="flex items-center justify-center"
+                        >
+                          <Clock className="h-4 w-4 mr-1" />
+                          Late
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={attendance[student.id] === 'absent' ? 'default' : 'outline'}
+                          onClick={() => handleAttendanceChange(student.id, 'absent')}
+                          className="flex items-center justify-center"
+                        >
+                          <UserX className="h-4 w-4 mr-1" />
+                          Absent
+                        </Button>
+                      </div>
+                    </Card>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+
+                {/* Desktop table layout */}
+                <div className="hidden md:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {students.map((student) => (
+                        <TableRow key={student.id}>
+                          <TableCell className="font-mono">{student.student_id}</TableCell>
+                          <TableCell className="font-medium">{student.full_name}</TableCell>
+                          <TableCell>{student.department}</TableCell>
+                          <TableCell>
+                            <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(attendance[student.id])}`}>
+                              {getStatusIcon(attendance[student.id])}
+                              <span className="ml-1 capitalize">{attendance[student.id]}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button
+                                size="sm"
+                                variant={attendance[student.id] === 'present' ? 'default' : 'outline'}
+                                onClick={() => handleAttendanceChange(student.id, 'present')}
+                              >
+                                <UserCheck className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant={attendance[student.id] === 'late' ? 'default' : 'outline'}
+                                onClick={() => handleAttendanceChange(student.id, 'late')}
+                              >
+                                <Clock className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant={attendance[student.id] === 'absent' ? 'default' : 'outline'}
+                                onClick={() => handleAttendanceChange(student.id, 'absent')}
+                              >
+                                <UserX className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile save button at bottom */}
+                <div className="md:hidden mt-6">
+                  <Button onClick={handleSaveAttendance} disabled={saving} className="w-full">
+                    <Save className="h-4 w-4 mr-2" />
+                    {saving ? 'Saving...' : 'Save Attendance'}
+                  </Button>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
