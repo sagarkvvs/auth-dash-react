@@ -209,7 +209,14 @@ export function MarkAttendance() {
   }
 
   return (
-    <div className="p-6 space-y-6 overscroll-none" style={{ overscrollBehavior: 'none' }}>
+    <div 
+      className="p-6 space-y-6 min-h-screen overscroll-none" 
+      style={{ 
+        overscrollBehavior: 'none', 
+        touchAction: 'pan-x pan-y',
+        WebkitOverflowScrolling: 'touch'
+      }}
+    >
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Mark Attendance</h2>
